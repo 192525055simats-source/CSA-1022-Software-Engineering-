@@ -10,7 +10,7 @@ Figma
 https://www.figma.com/make/gpHcpTXnKhzBMcUGh15Gt0/Online-Bus-Booking-System?fullscreen=1&t=YrgPFEhXS4z83MVb-1&code-node-id=0-6
 
 ### index.html
-<!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8">
