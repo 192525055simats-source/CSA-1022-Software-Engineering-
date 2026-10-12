@@ -1,0 +1,2841 @@
+/* =========================================
+   BUSGO ONLINE BUS BOOKING SYSTEM
+   ========================================= */
+
+const app = document.getElementById("app");
+const toast = document.getElementById("toast");
+
+let state = {
+
+    page: "home",
+
+    search: {
+        from: "Chennai",
+        to: "Bengaluru",
+        date: new Date().toISOString().split("T")[0],
+        passengers: 1
+    },
+
+    selectedBus: null,
+
+    selectedSeats: [],
+
+    passenger: null,
+
+    payment: "upi",
+
+    coupon: 0,
+
+    booking: null
+};
+
+
+/* =========================================
+   SAMPLE BUS DATA
+   ========================================= */
+
+const buses = [
+
+    {
+        id: 1,
+        operator: "Orange Travels",
+        type: "AC Sleeper",
+        from: "Chennai",
+        to: "Bengaluru",
+        depart: "21:30",
+        arrive: "05:30",
+        duration: "8h",
+        price: 729,
+        rating: 4.7,
+        seats: 12,
+        boarding: "Koyambedu",
+        dropping: "Silk Board",
+        amenities: ["Wi-Fi", "Charging", "Blanket"]
+    },
+
+    {
+        id: 2,
+        operator: "KPN Travels",
+        type: "AC Seater",
+        from: "Chennai",
+        to: "Bengaluru",
+        depart: "22:15",
+        arrive: "06:15",
+        duration: "8h",
+        price: 649,
+        rating: 4.5,
+        seats: 18,
+        boarding: "CMBT",
+        dropping: "Majestic",
+        amenities: ["Charging", "Water"]
+    },
+
+    {
+        id: 3,
+        operator: "SRS Travels",
+        type: "Volvo AC Sleeper",
+        from: "Chennai",
+        to: "Coimbatore",
+        depart: "20:00",
+        arrive: "05:00",
+        duration: "9h",
+        price: 899,
+        rating: 4.8,
+        seats: 8,
+        boarding: "Koyambedu",
+        dropping: "Gandhipuram",
+        amenities: ["Wi-Fi", "Blanket", "USB"]
+    },
+
+    {
+        id: 4,
+        operator: "VRL Travels",
+        type: "AC Seater",
+        from: "Bengaluru",
+        to: "Hyderabad",
+        depart: "19:45",
+        arrive: "07:15",
+        duration: "11h 30m",
+        price: 1099,
+        rating: 4.6,
+        seats: 16,
+        boarding: "Majestic",
+        dropping: "MGBS",
+        amenities: ["Wi-Fi", "Charging"]
+    },
+
+    {
+        id: 5,
+        operator: "IntrCity SmartBus",
+        type: "AC Sleeper",
+        from: "Chennai",
+        to: "Madurai",
+        depart: "22:00",
+        arrive: "05:45",
+        duration: "7h 45m",
+        price: 799,
+        rating: 4.6,
+        seats: 10,
+        boarding: "Koyambedu",
+        dropping: "Mattuthavani",
+        amenities: ["Wi-Fi", "Water", "Blanket"]
+    }
+];
+
+
+/* =========================================
+   UTILITY FUNCTIONS
+   ========================================= */
+
+function money(number) {
+
+    return "₹" + number.toLocaleString("en-IN");
+
+}
+
+
+function showToast(message) {
+
+    toast.textContent = message;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 2500);
+
+}
+
+
+function showPage(page) {
+
+    state.page = page;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    render();
+
+}
+
+
+function toggleMenu() {
+
+    document.getElementById("mainNav")
+        .classList.toggle("open");
+
+}
+
+
+/* =========================================
+   HOME PAGE
+   ========================================= */
+
+function homePage() {
+
+return `
+
+<section class="hero">
+
+<div class="hero-content">
+
+<div class="eyebrow">
+India's smarter bus booking experience
+</div>
+
+<h1>
+Your Journey,<br>
+Our Priority
+</h1>
+
+<p>
+Book your bus tickets easily, safely, and affordably.
+Compare operators, choose your seat and receive your
+digital ticket in minutes.
+</p>
+
+
+<form class="search-card" id="searchForm">
+
+<div class="search-grid">
+
+
+<div class="field">
+
+<label>From City</label>
+
+<select id="from">
+
+<option>Chennai</option>
+<option>Bengaluru</option>
+<option>Coimbatore</option>
+<option>Madurai</option>
+<option>Hyderabad</option>
+<option>Mumbai</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>To City</label>
+
+<select id="to">
+
+<option>Bengaluru</option>
+<option>Chennai</option>
+<option>Coimbatore</option>
+<option>Madurai</option>
+<option>Hyderabad</option>
+<option>Mumbai</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>Departure Date</label>
+
+<input
+type="date"
+id="date"
+value="${state.search.date}"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>Passengers</label>
+
+<select id="passengers">
+
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+
+</select>
+
+</div>
+
+
+<button
+class="btn orange"
+type="submit"
+>
+Search Buses
+</button>
+
+
+</div>
+
+</form>
+
+</div>
+
+</section>
+
+
+<section class="section">
+
+<div class="section-head">
+
+<p class="eyebrow">
+Explore India
+</p>
+
+<h2>
+Popular Routes
+</h2>
+
+</div>
+
+
+<div class="cards">
+
+${
+
+[
+"Chennai → Bengaluru",
+"Chennai → Coimbatore",
+"Chennai → Madurai",
+"Bengaluru → Hyderabad",
+"Mumbai → Pune",
+"Coimbatore → Chennai"
+]
+
+.map((route, index) => `
+
+<div class="route-card">
+
+<h3>🚌 ${route}</h3>
+
+<p class="muted">
+Starting from
+${money([729,899,799,1099,599,849][index])}
+</p>
+
+</div>
+
+`).join("")
+
+}
+
+</div>
+
+</section>
+
+
+<section class="section" id="offers">
+
+<p class="eyebrow">
+Save More
+</p>
+
+<h2>
+Special Offers
+</h2>
+
+<br>
+
+
+<div class="cards">
+
+<div class="offer">
+
+<h3>FIRSTGO</h3>
+
+<p>
+Flat ₹150 off on your first booking.
+</p>
+
+<span class="code">
+FIRSTGO
+</span>
+
+</div>
+
+
+<div class="offer">
+
+<h3>WEEKEND20</h3>
+
+<p>
+Get 20% off on selected weekend routes.
+</p>
+
+<span class="code">
+WEEKEND20
+</span>
+
+</div>
+
+
+<div class="offer">
+
+<h3>BUSGOUPI</h3>
+
+<p>
+Extra cashback on demo UPI payments.
+</p>
+
+<span class="code">
+BUSGOUPI
+</span>
+
+</div>
+
+</div>
+
+</section>
+
+
+<section class="section">
+
+<p class="eyebrow">
+Happy Travellers
+</p>
+
+<h2>
+What our customers say
+</h2>
+
+<br>
+
+
+<div class="cards">
+
+${
+
+[
+["A","Ananya R.","Smooth experience"],
+["K","Karthik S.","Very convenient"],
+["P","Priya S.","Great design"]
+]
+
+.map(item => `
+
+<div class="review">
+
+<div class="review-top">
+
+<div class="avatar">
+${item[0]}
+</div>
+
+<div>
+
+<strong>
+${item[1]}
+</strong>
+
+<div class="stars">
+★★★★★
+</div>
+
+</div>
+
+</div>
+
+<b>
+${item[2]}
+</b>
+
+<p class="muted">
+BusGo made my booking experience
+simple and convenient.
+</p>
+
+</div>
+
+`).join("")
+
+}
+
+</div>
+
+</section>
+
+`;
+
+}
+
+
+/* =========================================
+   SEARCH PAGE
+   ========================================= */
+
+function searchPage() {
+
+const matches = buses.filter(bus =>
+
+bus.from === state.search.from &&
+bus.to === state.search.to
+
+);
+
+
+return `
+
+<div class="page">
+
+<div class="page-title">
+
+<p class="eyebrow">
+BusGo Search
+</p>
+
+<h1>
+${state.search.from}
+→
+${state.search.to}
+</h1>
+
+<p class="muted">
+${state.search.date}
+·
+${state.search.passengers}
+Passenger(s)
+</p>
+
+</div>
+
+
+<div class="results-layout">
+
+
+<aside class="filters">
+
+<h3>
+Filters
+</h3>
+
+
+<div class="filter-group">
+
+<h4>
+Bus Type
+</h4>
+
+<label class="check">
+<input type="checkbox">
+AC
+</label>
+
+<label class="check">
+<input type="checkbox">
+Non-AC
+</label>
+
+<label class="check">
+<input type="checkbox">
+Sleeper
+</label>
+
+<label class="check">
+<input type="checkbox">
+Seater
+</label>
+
+</div>
+
+
+<div class="filter-group">
+
+<h4>
+Departure Time
+</h4>
+
+<label class="check">
+<input type="checkbox">
+Before 6 AM
+</label>
+
+<label class="check">
+<input type="checkbox">
+6 AM - 12 PM
+</label>
+
+<label class="check">
+<input type="checkbox">
+12 PM - 6 PM
+</label>
+
+<label class="check">
+<input type="checkbox">
+After 6 PM
+</label>
+
+</div>
+
+
+<div class="filter-group">
+
+<h4>
+Price Range
+</h4>
+
+<input
+type="range"
+min="400"
+max="2000"
+value="1500"
+style="width:100%"
+>
+
+<p class="muted">
+₹400 - ₹2,000
+</p>
+
+</div>
+
+
+<div class="filter-group">
+
+<h4>
+Rating
+</h4>
+
+<label class="check">
+<input type="checkbox">
+4.5+ Stars
+</label>
+
+<label class="check">
+<input type="checkbox">
+4+ Stars
+</label>
+
+</div>
+
+</aside>
+
+
+<section>
+
+<div class="sortbar">
+
+<b>
+${matches.length}
+Buses Found
+</b>
+
+<select id="sortSelect">
+
+<option value="recommended">
+Recommended
+</option>
+
+<option value="price">
+Price: Low to High
+</option>
+
+<option value="duration">
+Duration
+</option>
+
+<option value="departure">
+Departure Time
+</option>
+
+</select>
+
+</div>
+
+
+${
+matches.length
+?
+matches.map(busCard).join("")
+:
+emptySearch()
+}
+
+</section>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+function busCard(bus) {
+
+return `
+
+<article class="bus-card">
+
+<div class="bus-top">
+
+<div>
+
+<div class="operator">
+${bus.operator}
+</div>
+
+<div class="bus-type">
+${bus.type}
+·
+${bus.amenities.join(" · ")}
+</div>
+
+</div>
+
+<span class="rating">
+★ ${bus.rating}
+</span>
+
+</div>
+
+
+<div class="timing">
+
+<div>
+
+<div class="time">
+${bus.depart}
+</div>
+
+<div class="muted">
+${bus.from}
+</div>
+
+</div>
+
+
+<div>
+
+<div class="duration">
+${bus.duration}
+</div>
+
+<div class="dash"></div>
+
+</div>
+
+
+<div>
+
+<div class="time">
+${bus.arrive}
+</div>
+
+<div class="muted">
+${bus.to}
+</div>
+
+</div>
+
+</div>
+
+
+<div class="bus-bottom">
+
+<div>
+
+<b>
+${bus.seats}
+Seats Available
+</b>
+
+<div class="muted">
+${bus.boarding}
+→
+${bus.dropping}
+</div>
+
+</div>
+
+
+<div>
+
+<span class="price">
+${money(bus.price)}
+</span>
+
+<button
+class="btn primary"
+onclick="selectBus(${bus.id})"
+>
+View Seats
+</button>
+
+</div>
+
+</div>
+
+</article>
+
+`;
+
+}
+
+
+function emptySearch() {
+
+return `
+
+<div class="empty">
+
+<div class="empty-icon">
+🚌
+</div>
+
+<h3>
+No buses found
+</h3>
+
+<p class="muted">
+Try another route.
+</p>
+
+<br>
+
+<button
+class="btn primary"
+onclick="showPage('home')"
+>
+Search Again
+</button>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   BUS SELECTION
+   ========================================= */
+
+function selectBus(id) {
+
+state.selectedBus =
+buses.find(bus => bus.id === id);
+
+state.selectedSeats = [];
+
+showPage("seats");
+
+}
+
+
+/* =========================================
+   SEAT PAGE
+   ========================================= */
+
+function seatsPage() {
+
+const bus = state.selectedBus;
+
+if (!bus) {
+
+return emptySearch();
+
+}
+
+
+const bookedSeats =
+new Set([
+"A3",
+"A4",
+"A9",
+"A10",
+"A14"
+]);
+
+
+const seats =
+Array.from(
+{length: 15},
+(_, index) => "A" + (index + 1)
+);
+
+
+const total =
+state.selectedSeats.length *
+bus.price;
+
+
+return `
+
+<div class="page">
+
+<div class="page-title">
+
+<p class="eyebrow">
+Step 1 of 4
+</p>
+
+<h1>
+Select Your Seats
+</h1>
+
+<p class="muted">
+${bus.operator}
+·
+${bus.type}
+</p>
+
+</div>
+
+
+<div class="seat-layout">
+
+
+<section class="seat-card">
+
+<div class="bus-shell">
+
+<div class="driver">
+🚗 Driver
+</div>
+
+
+<div class="deck-title">
+LOWER DECK
+</div>
+
+
+<div class="seat-grid">
+
+${
+
+seats.map(seat => `
+
+<button
+
+class="seat
+${
+bookedSeats.has(seat)
+?
+"booked"
+:
+state.selectedSeats.includes(seat)
+?
+"selected"
+:
+""
+}"
+
+${bookedSeats.has(seat) ? "disabled" : ""}
+
+onclick="toggleSeat('${seat}')"
+
+>
+
+${seat}
+
+</button>
+
+`).join("")
+
+}
+
+</div>
+
+
+<div class="deck-title">
+UPPER / SLEEPER DECK
+</div>
+
+
+<div class="seat-grid">
+
+${
+
+["U1","U2","U3","U4","U5","U6"]
+
+.map(seat => `
+
+<button
+
+class="seat
+${state.selectedSeats.includes(seat)
+? "selected"
+: ""}"
+
+onclick="toggleSeat('${seat}')"
+
+>
+
+${seat}
+
+</button>
+
+`).join("")
+
+}
+
+</div>
+
+</div>
+
+
+<div class="legend">
+
+<span>
+<i class="dot available"></i>
+Available
+</span>
+
+<span>
+<i class="dot selected"></i>
+Selected
+</span>
+
+<span>
+<i class="dot booked"></i>
+Booked
+</span>
+
+</div>
+
+</section>
+
+
+<aside class="summary">
+
+<h3>
+Booking Summary
+</h3>
+
+<p class="muted">
+${bus.operator}
+</p>
+
+
+<div class="sum-row">
+
+<span>
+Seats
+</span>
+
+<b>
+${state.selectedSeats.join(", ") || "None"}
+</b>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Price / Seat
+</span>
+
+<span>
+${money(bus.price)}
+</span>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Seat Total
+</span>
+
+<span>
+${money(total)}
+</span>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Taxes & Fees
+</span>
+
+<span>
+₹20
+</span>
+
+</div>
+
+
+<div class="sum-row total">
+
+<span>
+Total
+</span>
+
+<span>
+${money(
+total +
+(state.selectedSeats.length ? 20 : 0)
+)}
+</span>
+
+</div>
+
+
+<button
+class="btn primary"
+onclick="continuePassenger()"
+>
+Continue
+</button>
+
+</aside>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+function toggleSeat(seat) {
+
+if (state.selectedSeats.includes(seat)) {
+
+state.selectedSeats =
+state.selectedSeats.filter(
+item => item !== seat
+);
+
+}
+
+else {
+
+if (
+state.selectedSeats.length >=
+Number(state.search.passengers)
+) {
+
+showToast(
+"Select only " +
+state.search.passengers +
+" seat(s)."
+);
+
+return;
+
+}
+
+state.selectedSeats.push(seat);
+
+}
+
+render();
+
+}
+
+
+function continuePassenger() {
+
+if (
+state.selectedSeats.length !==
+Number(state.search.passengers)
+) {
+
+showToast(
+"Please select " +
+state.search.passengers +
+" seat(s)."
+);
+
+return;
+
+}
+
+showPage("passenger");
+
+}
+
+
+/* =========================================
+   PASSENGER PAGE
+   ========================================= */
+
+function passengerPage() {
+
+const bus = state.selectedBus;
+
+return `
+
+<div class="page">
+
+<div class="page-title">
+
+<p class="eyebrow">
+Step 2 of 4
+</p>
+
+<h1>
+Passenger Details
+</h1>
+
+<p class="muted">
+Enter passenger information.
+</p>
+
+</div>
+
+
+<div class="form-layout">
+
+
+<form
+class="form-card"
+id="passengerForm"
+>
+
+
+<div class="form-grid">
+
+
+<div class="form-field">
+
+<label>
+Passenger Name
+</label>
+
+<input
+id="name"
+type="text"
+placeholder="Enter full name"
+required
+>
+
+</div>
+
+
+<div class="form-field">
+
+<label>
+Age
+</label>
+
+<input
+id="age"
+type="number"
+placeholder="Age"
+required
+>
+
+</div>
+
+
+<div class="form-field">
+
+<label>
+Gender
+</label>
+
+<select id="gender">
+
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+
+</select>
+
+</div>
+
+
+<div class="form-field">
+
+<label>
+Email
+</label>
+
+<input
+id="email"
+type="email"
+placeholder="name@example.com"
+required
+>
+
+</div>
+
+
+<div class="form-field">
+
+<label>
+Phone
+</label>
+
+<input
+id="phone"
+type="tel"
+placeholder="10 digit number"
+required
+>
+
+</div>
+
+
+<div class="form-field">
+
+<label>
+Boarding Point
+</label>
+
+<select id="boarding">
+
+<option>
+${bus.boarding}
+</option>
+
+<option>
+CMBT
+</option>
+
+<option>
+Guindy
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form-field">
+
+<label>
+Dropping Point
+</label>
+
+<select id="dropping">
+
+<option>
+${bus.dropping}
+</option>
+
+<option>
+Majestic
+</option>
+
+<option>
+Silk Board
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+<button
+class="btn primary"
+style="margin-top:20px"
+>
+Continue to Payment
+</button>
+
+</form>
+
+
+${summaryHTML()}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+function summaryHTML() {
+
+const bus = state.selectedBus;
+
+const total =
+bus.price *
+state.selectedSeats.length +
+20;
+
+
+return `
+
+<aside class="summary">
+
+<h3>
+Trip Summary
+</h3>
+
+
+<div class="sum-row">
+
+<span>
+Route
+</span>
+
+<b>
+${bus.from}
+→
+${bus.to}
+</b>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Date
+</span>
+
+<span>
+${state.search.date}
+</span>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Seats
+</span>
+
+<span>
+${state.selectedSeats.join(", ")}
+</span>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Ticket
+</span>
+
+<span>
+${money(
+bus.price *
+state.selectedSeats.length
+)}
+</span>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Taxes
+</span>
+
+<span>
+₹20
+</span>
+
+</div>
+
+
+<div class="sum-row total">
+
+<span>
+Total
+</span>
+
+<span>
+${money(total)}
+</span>
+
+</div>
+
+</aside>
+
+`;
+
+}
+
+
+/* =========================================
+   PAYMENT PAGE
+   ========================================= */
+
+function paymentPage() {
+
+const bus = state.selectedBus;
+
+const base =
+bus.price *
+state.selectedSeats.length;
+
+const total =
+Math.max(
+0,
+base + 20 - state.coupon
+);
+
+
+return `
+
+<div class="page">
+
+<div class="page-title">
+
+<p class="eyebrow">
+Step 3 of 4
+</p>
+
+<h1>
+Secure Checkout
+</h1>
+
+<p class="muted">
+Demo payment only. No real payment is processed.
+</p>
+
+</div>
+
+
+<div class="payment-grid">
+
+
+<section class="form-card">
+
+<h3>
+Choose Payment Method
+</h3>
+
+
+<div class="pay-options">
+
+
+${
+
+[
+["upi","📱","UPI"],
+["card","💳","Debit / Credit Card"],
+["netbanking","🏦","Net Banking"],
+["wallet","👛","Digital Wallet"]
+]
+
+.map(method => `
+
+<label
+class="pay-option
+${
+state.payment === method[0]
+? "active"
+: ""
+}"
+>
+
+<input
+type="radio"
+name="payment"
+value="${method[0]}"
+${state.payment === method[0] ? "checked" : ""}
+
+onchange="
+state.payment=this.value;
+render();
+"
+>
+
+${method[1]}
+
+<b>
+${method[2]}
+</b>
+
+</label>
+
+`).join("")
+
+}
+
+</div>
+
+
+<div class="form-field">
+
+<label>
+Demo UPI ID
+</label>
+
+<input
+value="demo@upi"
+readonly
+>
+
+</div>
+
+
+<br>
+
+
+<label>
+Coupon Code
+</label>
+
+
+<div class="coupon">
+
+<input
+id="coupon"
+placeholder="Try FIRSTGO"
+>
+
+<button
+class="btn light"
+onclick="applyCoupon()"
+>
+Apply
+</button>
+
+</div>
+
+
+</section>
+
+
+<aside class="summary">
+
+<h3>
+Fare Summary
+</h3>
+
+
+<div class="sum-row">
+
+<span>
+Base Fare
+</span>
+
+<span>
+${money(base)}
+</span>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Convenience Fee
+</span>
+
+<span>
+₹20
+</span>
+
+</div>
+
+
+<div class="sum-row">
+
+<span>
+Discount
+</span>
+
+<span>
+-
+${money(state.coupon)}
+</span>
+
+</div>
+
+
+<div class="sum-row total">
+
+<span>
+Payable
+</span>
+
+<span>
+${money(total)}
+</span>
+
+</div>
+
+
+<button
+class="btn orange"
+onclick="payNow()"
+>
+Pay Now · ${money(total)}
+</button>
+
+
+</aside>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+function applyCoupon() {
+
+const code =
+document
+.getElementById("coupon")
+.value
+.trim()
+.toUpperCase();
+
+
+if (code === "FIRSTGO") {
+
+state.coupon = 150;
+
+showToast("₹150 discount applied!");
+
+}
+
+else if (code === "WEEKEND20") {
+
+state.coupon =
+Math.round(
+state.selectedBus.price *
+state.selectedSeats.length *
+0.20
+);
+
+showToast("20% discount applied!");
+
+}
+
+else {
+
+state.coupon = 0;
+
+showToast("Invalid coupon.");
+
+}
+
+render();
+
+}
+
+
+/* =========================================
+   PAYMENT
+   ========================================= */
+
+function payNow() {
+
+const bus = state.selectedBus;
+
+const total =
+Math.max(
+0,
+bus.price *
+state.selectedSeats.length +
+20 -
+state.coupon
+);
+
+
+state.booking = {
+
+id:
+"BG" +
+Date.now()
+.toString()
+.slice(-8),
+
+date:
+state.search.date,
+
+total: total,
+
+seats:
+[...state.selectedSeats],
+
+passenger:
+state.passenger,
+
+bus:
+bus,
+
+payment:
+state.payment
+
+};
+
+
+localStorage.setItem(
+"busgoBooking",
+JSON.stringify(state.booking)
+);
+
+
+showToast(
+"Payment successful!"
+);
+
+
+setTimeout(() => {
+
+showPage("confirmation");
+
+}, 700);
+
+}
+
+
+/* =========================================
+   CONFIRMATION
+   ========================================= */
+
+function confirmationPage() {
+
+const booking =
+state.booking ||
+JSON.parse(
+localStorage.getItem(
+"busgoBooking"
+)
+);
+
+
+if (!booking) {
+
+return `
+
+<div class="page">
+
+<div class="empty">
+
+<h3>
+No booking found
+</h3>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+const passenger =
+booking.passenger || {};
+
+
+return `
+
+<div class="page">
+
+<div class="confirm">
+
+
+<div class="success">
+
+<div class="success-icon">
+✓
+</div>
+
+
+<h1>
+Booking Confirmed!
+</h1>
+
+
+<p class="muted">
+Your BusGo ticket has been generated successfully.
+</p>
+
+
+<div
+class="ticket"
+id="ticket"
+>
+
+
+<div class="ticket-head">
+
+<div>
+
+<b>
+🚌 BusGo
+</b>
+
+<div>
+${booking.bus.operator}
+</div>
+
+</div>
+
+
+<div>
+
+<b>
+BOOKING ID
+</b>
+
+<div>
+${booking.id}
+</div>
+
+</div>
+
+</div>
+
+
+<div class="ticket-body">
+
+
+<div class="ticket-grid">
+
+
+${ticketItem(
+"Route",
+booking.bus.from +
+" → " +
+booking.bus.to
+)}
+
+
+${ticketItem(
+"Travel Date",
+booking.date
+)}
+
+
+${ticketItem(
+"Departure",
+booking.bus.depart
+)}
+
+
+${ticketItem(
+"Passenger",
+passenger.name ||
+"Demo Passenger"
+)}
+
+
+${ticketItem(
+"Seat(s)",
+booking.seats.join(", ")
+)}
+
+
+${ticketItem(
+"Boarding",
+passenger.boarding ||
+booking.bus.boarding
+)}
+
+
+${ticketItem(
+"Dropping",
+passenger.dropping ||
+booking.bus.dropping
+)}
+
+
+${ticketItem(
+"Total Fare",
+money(booking.total)
+)}
+
+
+${ticketItem(
+"Status",
+"CONFIRMED"
+)}
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="actions">
+
+<button
+class="btn primary"
+onclick="downloadTicket()"
+>
+Download Ticket
+</button>
+
+
+<button
+class="btn light"
+onclick="window.print()"
+>
+Print Ticket
+</button>
+
+
+<button
+class="btn outline"
+onclick="showPage('bookings')"
+>
+My Bookings
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+function ticketItem(title, value) {
+
+return `
+
+<div class="ticket-item">
+
+<label>
+${title}
+</label>
+
+<strong>
+${value}
+</strong>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   DOWNLOAD TICKET
+   ========================================= */
+
+function downloadTicket() {
+
+const booking = state.booking;
+
+const text = `
+
+BUSGO E-TICKET
+
+Booking ID:
+${booking.id}
+
+Route:
+${booking.bus.from} → ${booking.bus.to}
+
+Travel Date:
+${booking.date}
+
+Bus:
+${booking.bus.operator}
+
+Departure:
+${booking.bus.depart}
+
+Seat:
+${booking.seats.join(", ")}
+
+Passenger:
+${booking.passenger.name}
+
+Fare:
+${money(booking.total)}
+
+Status:
+CONFIRMED
+
+Thank you for booking with BusGo!
+
+`;
+
+
+const blob =
+new Blob(
+[text],
+{
+type: "text/plain"
+}
+);
+
+
+const url =
+URL.createObjectURL(blob);
+
+
+const a =
+document.createElement("a");
+
+
+a.href = url;
+
+a.download =
+`BusGo-${booking.id}.txt`;
+
+
+a.click();
+
+
+URL.revokeObjectURL(url);
+
+}
+
+
+/* =========================================
+   MY BOOKINGS
+   ========================================= */
+
+function bookingsPage() {
+
+const booking =
+state.booking ||
+JSON.parse(
+localStorage.getItem(
+"busgoBooking"
+)
+);
+
+
+if (!booking) {
+
+return `
+
+<div class="page">
+
+<div class="page-title">
+
+<p class="eyebrow">
+Your Trips
+</p>
+
+<h1>
+My Bookings
+</h1>
+
+</div>
+
+
+<div class="empty">
+
+<div class="empty-icon">
+🎫
+</div>
+
+<h3>
+No Upcoming Bookings
+</h3>
+
+<p class="muted">
+Your confirmed tickets will appear here.
+</p>
+
+<br>
+
+<button
+class="btn primary"
+onclick="showPage('home')"
+>
+Book a Bus
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+return `
+
+<div class="page">
+
+<div class="page-title">
+
+<p class="eyebrow">
+Your Trips
+</p>
+
+<h1>
+My Bookings
+</h1>
+
+<p class="muted">
+Manage your BusGo trips.
+</p>
+
+</div>
+
+
+<div class="booking-item">
+
+
+<div>
+
+<span class="status">
+CONFIRMED
+</span>
+
+
+<h3 style="margin-top:10px">
+
+${booking.bus.from}
+
+→
+
+${booking.bus.to}
+
+</h3>
+
+
+<p class="muted">
+
+${booking.bus.operator}
+
+·
+
+${booking.date}
+
+·
+
+Seat
+
+${booking.seats.join(", ")}
+
+</p>
+
+</div>
+
+
+<div>
+
+<b>
+${money(booking.total)}
+</b>
+
+<br>
+
+
+<button
+class="btn light"
+onclick="showPage('confirmation')"
+>
+View Ticket
+</button>
+
+
+<button
+class="btn danger"
+onclick="cancelBooking()"
+>
+Cancel
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   CANCEL BOOKING
+   ========================================= */
+
+function cancelBooking() {
+
+if (
+confirm(
+"Cancel this demo booking?"
+)
+) {
+
+state.booking = null;
+
+localStorage.removeItem(
+"busgoBooking"
+);
+
+showToast(
+"Booking cancelled."
+);
+
+render();
+
+}
+
+}
+
+
+/* =========================================
+   LOGIN / SIGNUP
+   ========================================= */
+
+function authPage(type) {
+
+const login =
+type === "login";
+
+
+return `
+
+<div class="auth-wrap">
+
+
+<div class="auth-card">
+
+
+<div
+class="logo"
+style="margin-bottom:25px"
+>
+🚌 Bus<span>Go</span>
+</div>
+
+
+<h1>
+
+${
+login
+?
+"Welcome Back"
+:
+"Create Your Account"
+}
+
+</h1>
+
+
+<p class="muted">
+
+${
+login
+?
+"Login to manage your bookings."
+:
+"Sign up for faster bus booking."
+}
+
+</p>
+
+
+<form id="authForm">
+
+
+<div class="form-field">
+
+<label>
+${login ? "Email or Phone" : "Email"}
+</label>
+
+<input
+id="authEmail"
+type="text"
+placeholder="you@example.com"
+required
+>
+
+</div>
+
+
+${
+!login
+?
+`
+<div class="form-field">
+
+<label>
+Full Name
+</label>
+
+<input
+id="authName"
+type="text"
+placeholder="Your name"
+required
+>
+
+</div>
+`
+:
+""
+}
+
+
+<div class="form-field">
+
+<label>
+Password
+</label>
+
+<input
+id="authPassword"
+type="password"
+placeholder="••••••••"
+required
+>
+
+</div>
+
+
+<button
+class="btn primary"
+style="margin-top:15px"
+>
+${login ? "Login" : "Create Account"}
+</button>
+
+
+</form>
+
+
+${
+login
+?
+`
+<p style="margin-top:18px;text-align:center">
+
+<a
+href="#"
+class="auth-link"
+onclick="showToast('Password reset link sent!')"
+>
+Forgot Password?
+</a>
+
+</p>
+`
+:
+""
+}
+
+
+<p
+style="margin-top:20px;text-align:center"
+>
+
+${
+login
+?
+"New to BusGo?"
+:
+"Already have an account?"
+}
+
+
+<a
+href="#"
+class="auth-link"
+onclick="showPage('${login ? "signup" : "login"}')"
+>
+
+${
+login
+?
+"Sign Up"
+:
+"Login"
+}
+
+</a>
+
+</p>
+
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =========================================
+   RENDER
+   ========================================= */
+
+function render() {
+
+if (state.page === "home") {
+
+app.innerHTML =
+homePage();
+
+}
+
+else if (state.page === "search") {
+
+app.innerHTML =
+searchPage();
+
+}
+
+else if (state.page === "seats") {
+
+app.innerHTML =
+seatsPage();
+
+}
+
+else if (state.page === "passenger") {
+
+app.innerHTML =
+passengerPage();
+
+}
+
+else if (state.page === "payment") {
+
+app.innerHTML =
+paymentPage();
+
+}
+
+else if (state.page === "confirmation") {
+
+app.innerHTML =
+confirmationPage();
+
+}
+
+else if (state.page === "bookings") {
+
+app.innerHTML =
+bookingsPage();
+
+}
+
+else if (
+state.page === "login" ||
+state.page === "signup"
+) {
+
+app.innerHTML =
+authPage(state.page);
+
+}
+
+
+attachEvents();
+
+}
+
+
+/* =========================================
+   EVENT HANDLERS
+   ========================================= */
+
+function attachEvents() {
+
+
+/* SEARCH FORM */
+
+const searchForm =
+document.getElementById(
+"searchForm"
+);
+
+
+if (searchForm) {
+
+searchForm.onsubmit =
+function(event) {
+
+event.preventDefault();
+
+
+state.search = {
+
+from:
+document.getElementById(
+"from"
+).value,
+
+to:
+document.getElementById(
+"to"
+).value,
+
+date:
+document.getElementById(
+"date"
+).value,
+
+passengers:
+Number(
+document.getElementById(
+"passengers"
+).value
+)
+
+};
+
+
+if (
+state.search.from ===
+state.search.to
+) {
+
+showToast(
+"From and To cities must be different."
+);
+
+return;
+
+}
+
+
+showPage("search");
+
+};
+
+}
+
+
+/* PASSENGER FORM */
+
+const passengerForm =
+document.getElementById(
+"passengerForm"
+);
+
+
+if (passengerForm) {
+
+passengerForm.onsubmit =
+function(event) {
+
+event.preventDefault();
+
+
+state.passenger = {
+
+name:
+document.getElementById(
+"name"
+).value,
+
+age:
+document.getElementById(
+"age"
+).value,
+
+gender:
+document.getElementById(
+"gender"
+).value,
+
+email:
+document.getElementById(
+"email"
+).value,
+
+phone:
+document.getElementById(
+"phone"
+).value,
+
+boarding:
+document.getElementById(
+"boarding"
+).value,
+
+dropping:
+document.getElementById(
+"dropping"
+).value
+
+};
+
+
+showPage("payment");
+
+};
+
+}
+
+
+/* LOGIN */
+
+const authForm =
+document.getElementById(
+"authForm"
+);
+
+
+if (authForm) {
+
+authForm.onsubmit =
+function(event) {
+
+event.preventDefault();
+
+
+showToast(
+state.page === "login"
+?
+"Login successful!"
+:
+"Account created successfully!"
+);
+
+
+setTimeout(() => {
+
+showPage("home");
+
+}, 700);
+
+};
+
+}
+
+
+/* SORTING */
+
+const sortSelect =
+document.getElementById(
+"sortSelect"
+);
+
+
+if (sortSelect) {
+
+sortSelect.onchange =
+function() {
+
+let results =
+buses.filter(bus =>
+
+bus.from === state.search.from &&
+bus.to === state.search.to
+
+);
+
+
+if (
+this.value === "price"
+) {
+
+results.sort(
+(a,b) =>
+a.price - b.price
+);
+
+}
+
+
+if (
+this.value === "duration"
+) {
+
+results.sort(
+(a,b) =>
+parseInt(a.duration) -
+parseInt(b.duration)
+);
+
+}
+
+
+if (
+this.value === "departure"
+) {
+
+results.sort(
+(a,b) =>
+a.depart.localeCompare(
+b.depart
+)
+);
+
+}
+
+
+const section =
+document.querySelector(
+".results-layout section"
+);
+
+
+section.innerHTML = `
+
+<div class="sortbar">
+
+<b>
+${results.length}
+Buses Found
+</b>
+
+<select id="sortSelect">
+
+<option value="recommended">
+Recommended
+</option>
+
+<option value="price">
+Price: Low to High
+</option>
+
+<option value="duration">
+Duration
+</option>
+
+<option value="departure">
+Departure Time
+</option>
+
+</select>
+
+</div>
+
+${results.map(busCard).join("")}
+
+`;
+
+
+attachEvents();
+
+};
+
+}
+
+}
+
+
+/* =========================================
+   START APPLICATION
+   ========================================= */
+
+render();
