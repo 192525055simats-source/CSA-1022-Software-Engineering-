@@ -8,7 +8,7 @@ To design a prototype for E-Commerce Web Application using Figma.
 Figma
 
 ### Figma Prototype
-https://class-purple-73315546.figma.site
+https://class-purple-73315546.figma.site  
 
 ### index html 
 <!DOCTYPE html>
