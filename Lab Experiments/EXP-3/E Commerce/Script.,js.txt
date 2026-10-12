@@ -1,0 +1,1029 @@
+// ================= PRODUCTS =================
+
+const products = [
+
+    {
+        id: 1,
+        name: "Nova X Pro Smartphone",
+        brand: "NovaTech",
+        category: "Electronics",
+        icon: "📱",
+        price: 55999,
+        oldPrice: 69999,
+        discount: 20,
+        rating: 4.8,
+        reviews: 1240,
+        stock: true
+    },
+
+    {
+        id: 2,
+        name: "NovaPods Wireless Earbuds",
+        brand: "NovaAudio",
+        category: "Electronics",
+        icon: "🎧",
+        price: 3499,
+        oldPrice: 4999,
+        discount: 30,
+        rating: 4.7,
+        reviews: 860,
+        stock: true
+    },
+
+    {
+        id: 3,
+        name: "Premium Smart Watch",
+        brand: "NovaFit",
+        category: "Accessories",
+        icon: "⌚",
+        price: 6999,
+        oldPrice: 9999,
+        discount: 30,
+        rating: 4.6,
+        reviews: 530,
+        stock: true
+    },
+
+    {
+        id: 4,
+        name: "Urban Classic Jacket",
+        brand: "NovaWear",
+        category: "Fashion",
+        icon: "🧥",
+        price: 2499,
+        oldPrice: 3999,
+        discount: 38,
+        rating: 4.5,
+        reviews: 420,
+        stock: true
+    },
+
+    {
+        id: 5,
+        name: "AirFlex Running Shoes",
+        brand: "NovaSport",
+        category: "Sports",
+        icon: "👟",
+        price: 3299,
+        oldPrice: 4999,
+        discount: 34,
+        rating: 4.7,
+        reviews: 720,
+        stock: true
+    },
+
+    {
+        id: 6,
+        name: "Luxury Skincare Kit",
+        brand: "NovaBeauty",
+        category: "Beauty",
+        icon: "🧴",
+        price: 1899,
+        oldPrice: 2999,
+        discount: 37,
+        rating: 4.4,
+        reviews: 310,
+        stock: true
+    },
+
+    {
+        id: 7,
+        name: "Minimal Desk Lamp",
+        brand: "NovaHome",
+        category: "Home",
+        icon: "💡",
+        price: 1299,
+        oldPrice: 1999,
+        discount: 35,
+        rating: 4.5,
+        reviews: 210,
+        stock: true
+    },
+
+    {
+        id: 8,
+        name: "Premium Leather Backpack",
+        brand: "NovaStyle",
+        category: "Accessories",
+        icon: "🎒",
+        price: 2199,
+        oldPrice: 3499,
+        discount: 37,
+        rating: 4.6,
+        reviews: 380,
+        stock: true
+    }
+
+];
+
+
+// ================= VARIABLES =================
+
+let cart = JSON.parse(localStorage.getItem("novamartCart")) || [];
+
+let wishlist =
+    JSON.parse(localStorage.getItem("novamartWishlist")) || [];
+
+let currentProduct = products[0];
+
+let quantity = 1;
+
+let filteredProducts = [...products];
+
+
+// ================= PAGE NAVIGATION =================
+
+function showPage(pageId) {
+
+    document.querySelectorAll(".page").forEach(page => {
+        page.classList.remove("active");
+    });
+
+    const page = document.getElementById(pageId);
+
+    if (page) {
+        page.classList.add("active");
+    }
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+    if (pageId === "cart") {
+        renderCart();
+    }
+
+    if (pageId === "checkout") {
+        renderCheckout();
+    }
+
+    if (pageId === "wishlist") {
+        renderWishlist();
+    }
+
+    if (pageId === "orders") {
+        updateCartCount();
+    }
+
+    if (pageId === "payment") {
+        updatePaymentSummary();
+    }
+
+}
+
+
+// ================= PRODUCT CARD =================
+
+function productCard(product) {
+
+    const liked =
+        wishlist.some(item => item.id === product.id);
+
+    return `
+
+        <div class="product-card">
+
+            <div class="product-image">
+
+                <span class="discount-badge">
+                    ${product.discount}% OFF
+                </span>
+
+                <button
+                    class="wishlist"
+                    onclick="toggleWishlist(${product.id})"
+                >
+                    ${liked ? "♥" : "♡"}
+                </button>
+
+                <span
+                    onclick="openProduct(${product.id})"
+                    style="cursor:pointer"
+                >
+                    ${product.icon}
+                </span>
+
+            </div>
+
+
+            <div class="product-content">
+
+                <span class="brand">
+                    ${product.brand}
+                </span>
+
+                <h3>
+                    ${product.name}
+                </h3>
+
+                <div class="rating">
+                    ⭐⭐⭐⭐⭐
+                    <span>
+                        ${product.rating}
+                        (${product.reviews})
+                    </span>
+                </div>
+
+                <span class="old-price">
+                    ₹${product.oldPrice.toLocaleString()}
+                </span>
+
+                <span class="current-price">
+                    ₹${product.price.toLocaleString()}
+                </span>
+
+                <button
+                    class="add-cart"
+                    onclick="addToCartById(${product.id})"
+                >
+                    🛒 Add to Cart
+                </button>
+
+            </div>
+
+        </div>
+
+    `;
+}
+
+
+// ================= RENDER PRODUCTS =================
+
+function renderProducts() {
+
+    document.getElementById("homeProducts").innerHTML =
+        products.slice(0, 4).map(productCard).join("");
+
+    document.getElementById("shopProducts").innerHTML =
+        filteredProducts.map(productCard).join("");
+
+    document.getElementById("dealProducts").innerHTML =
+        products.slice(0, 6).map(productCard).join("");
+
+    document.getElementById("relatedProducts").innerHTML =
+        products.slice(2, 6).map(productCard).join("");
+
+    document.getElementById("productCount").textContent =
+        `${filteredProducts.length} Products found`;
+}
+
+
+// ================= SEARCH =================
+
+function searchProducts() {
+
+    const keyword =
+        document.getElementById("searchInput")
+            .value
+            .toLowerCase();
+
+    filteredProducts = products.filter(product =>
+
+        product.name.toLowerCase().includes(keyword) ||
+
+        product.brand.toLowerCase().includes(keyword) ||
+
+        product.category.toLowerCase().includes(keyword)
+
+    );
+
+    document.getElementById("shopProducts").innerHTML =
+        filteredProducts.map(productCard).join("");
+
+    document.getElementById("productCount").textContent =
+        `${filteredProducts.length} Products found`;
+
+    if (keyword.length > 0) {
+        showPage("shop");
+    }
+
+}
+
+
+// ================= CATEGORY FILTER =================
+
+function filterCategory(category) {
+
+    filteredProducts =
+        products.filter(product =>
+            product.category === category
+        );
+
+    renderProducts();
+
+    showPage("shop");
+
+}
+
+
+// ================= PRICE FILTER =================
+
+function filterPrice() {
+
+    const value =
+        Number(document.getElementById("priceRange").value);
+
+    document.getElementById("priceValue").textContent =
+        value.toLocaleString();
+
+    filteredProducts =
+        products.filter(product =>
+            product.price <= value
+        );
+
+    document.getElementById("shopProducts").innerHTML =
+        filteredProducts.map(productCard).join("");
+
+}
+
+
+// ================= SORT =================
+
+function sortProducts() {
+
+    const option =
+        document.getElementById("sortSelect").value;
+
+    if (option === "Price: Low to High") {
+
+        filteredProducts.sort(
+            (a, b) => a.price - b.price
+        );
+
+    }
+
+    if (option === "Price: High to Low") {
+
+        filteredProducts.sort(
+            (a, b) => b.price - a.price
+        );
+
+    }
+
+    if (option === "New Arrivals") {
+
+        filteredProducts.reverse();
+
+    }
+
+    document.getElementById("shopProducts").innerHTML =
+        filteredProducts.map(productCard).join("");
+
+}
+
+
+// ================= PRODUCT DETAILS =================
+
+function openProduct(id) {
+
+    const product =
+        products.find(item => item.id === id);
+
+    if (!product) return;
+
+    currentProduct = product;
+
+    quantity = 1;
+
+    document.getElementById("detailName").textContent =
+        product.name;
+
+    document.getElementById("detailBrand").textContent =
+        product.brand;
+
+    document.getElementById("detailPrice").textContent =
+        "₹" + product.price.toLocaleString();
+
+    document.getElementById("detailOldPrice").textContent =
+        "₹" + product.oldPrice.toLocaleString();
+
+    document.getElementById("detailImage").textContent =
+        product.icon;
+
+    document.getElementById("quantity").textContent =
+        quantity;
+
+    showPage("productDetails");
+
+}
+
+
+// ================= QUANTITY =================
+
+function changeQuantity(value) {
+
+    quantity += value;
+
+    if (quantity < 1) {
+        quantity = 1;
+    }
+
+    if (quantity > 10) {
+        quantity = 10;
+    }
+
+    document.getElementById("quantity").textContent =
+        quantity;
+
+}
+
+
+// ================= CART =================
+
+function addToCartById(id) {
+
+    const product =
+        products.find(item => item.id === id);
+
+    addToCart(product);
+
+}
+
+
+function addToCart(product) {
+
+    if (!product) return;
+
+    const existing =
+        cart.find(item => item.id === product.id);
+
+    if (existing) {
+
+        existing.quantity++;
+
+    } else {
+
+        cart.push({
+            ...product,
+            quantity: 1
+        });
+
+    }
+
+    saveCart();
+
+    updateCartCount();
+
+    alert(
+        product.name +
+        " added to your cart!"
+    );
+
+}
+
+
+function addCurrentProduct() {
+
+    for (let i = 0; i < quantity; i++) {
+        addToCart(currentProduct);
+    }
+
+    showPage("cart");
+
+}
+
+
+function buyNow() {
+
+    cart = [];
+
+    for (let i = 0; i < quantity; i++) {
+        cart.push({
+            ...currentProduct,
+            quantity: 1
+        });
+    }
+
+    saveCart();
+
+    showPage("checkout");
+
+}
+
+
+// ================= CART RENDER =================
+
+function renderCart() {
+
+    const container =
+        document.getElementById("cartItems");
+
+    if (cart.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="checkout-card">
+
+                <h2>Your cart is empty</h2>
+
+                <p>
+                    Start shopping and add products
+                    to your cart.
+                </p>
+
+                <br>
+
+                <button
+                    class="primary-btn"
+                    onclick="showPage('shop')"
+                >
+                    Continue Shopping
+                </button>
+
+            </div>
+
+        `;
+
+        updateCartSummary();
+
+        return;
+    }
+
+
+    container.innerHTML =
+        cart.map(item => `
+
+            <div class="cart-item">
+
+                <div class="cart-item-image">
+                    ${item.icon}
+                </div>
+
+                <div class="cart-item-info">
+
+                    <span class="brand">
+                        ${item.brand}
+                    </span>
+
+                    <h3>${item.name}</h3>
+
+                    <p>
+                        ₹${item.price.toLocaleString()}
+                    </p>
+
+                    <button
+                        class="remove-btn"
+                        onclick="removeFromCart(${item.id})"
+                    >
+                        Remove
+                    </button>
+
+                </div>
+
+
+                <div class="cart-controls">
+
+                    <button
+                        onclick="changeCartQuantity(${item.id}, -1)"
+                    >
+                        −
+                    </button>
+
+                    <span>${item.quantity}</span>
+
+                    <button
+                        onclick="changeCartQuantity(${item.id}, 1)"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+
+                <strong>
+                    ₹${(
+                        item.price * item.quantity
+                    ).toLocaleString()}
+                </strong>
+
+            </div>
+
+        `).join("");
+
+    updateCartSummary();
+
+}
+
+
+// ================= CART QUANTITY =================
+
+function changeCartQuantity(id, amount) {
+
+    const item =
+        cart.find(product => product.id === id);
+
+    if (!item) return;
+
+    item.quantity += amount;
+
+    if (item.quantity <= 0) {
+
+        cart =
+            cart.filter(product =>
+                product.id !== id
+            );
+
+    }
+
+    saveCart();
+
+    renderCart();
+
+}
+
+
+// ================= REMOVE =================
+
+function removeFromCart(id) {
+
+    cart =
+        cart.filter(product =>
+            product.id !== id
+        );
+
+    saveCart();
+
+    renderCart();
+
+    updateCartCount();
+
+}
+
+
+// ================= SUMMARY =================
+
+function getCartTotal() {
+
+    return cart.reduce(
+        (total, item) =>
+            total + item.price * item.quantity,
+        0
+    );
+
+}
+
+
+function updateCartSummary() {
+
+    const subtotal =
+        getCartTotal();
+
+    const discount =
+        cart.reduce(
+            (total, item) =>
+                total +
+                (
+                    (item.oldPrice - item.price)
+                    * item.quantity
+                ),
+            0
+        );
+
+    document.getElementById("subtotal").textContent =
+        "₹" + subtotal.toLocaleString();
+
+    document.getElementById("cartDiscount").textContent =
+        "-₹" + discount.toLocaleString();
+
+    document.getElementById("deliveryFee").textContent =
+        subtotal >= 999 ? "FREE" : "₹99";
+
+    document.getElementById("cartTotal").textContent =
+        "₹" +
+        (
+            subtotal +
+            (subtotal >= 999 ? 0 : 99)
+        ).toLocaleString();
+
+}
+
+
+// ================= CART COUNT =================
+
+function updateCartCount() {
+
+    const count =
+        cart.reduce(
+            (total, item) =>
+                total + item.quantity,
+            0
+        );
+
+    document.getElementById("cartCount").textContent =
+        count;
+
+}
+
+
+// ================= COUPON =================
+
+function applyCoupon() {
+
+    const coupon =
+        document.getElementById("couponInput")
+            .value
+            .trim()
+            .toUpperCase();
+
+    if (coupon === "NOVA20") {
+
+        alert(
+            "Coupon applied! You received 20% discount."
+        );
+
+    } else {
+
+        alert("Invalid coupon code.");
+
+    }
+
+}
+
+
+// ================= CHECKOUT =================
+
+function renderCheckout() {
+
+    const container =
+        document.getElementById("checkoutItems");
+
+    container.innerHTML =
+        cart.map(item => `
+
+            <div class="checkout-product">
+
+                <div class="small-product-image">
+                    ${item.icon}
+                </div>
+
+                <div style="flex:1">
+
+                    <strong>
+                        ${item.name}
+                    </strong>
+
+                    <p>
+                        Quantity: ${item.quantity}
+                    </p>
+
+                </div>
+
+                <strong>
+                    ₹${(
+                        item.price *
+                        item.quantity
+                    ).toLocaleString()}
+                </strong>
+
+            </div>
+
+        `).join("");
+
+
+    const total =
+        getCartTotal();
+
+    document.getElementById("checkoutTotal").textContent =
+        "₹" + total.toLocaleString();
+
+    document.getElementById("checkoutFinal").textContent =
+        "₹" + total.toLocaleString();
+
+}
+
+
+// ================= PAYMENT =================
+
+function updatePaymentSummary() {
+
+    const total =
+        getCartTotal();
+
+    document.getElementById("paymentTotal").textContent =
+        "₹" + total.toLocaleString();
+
+    document.getElementById("paymentFinal").textContent =
+        "₹" + total.toLocaleString();
+
+}
+
+
+function makePayment() {
+
+    if (cart.length === 0) {
+
+        alert("Your cart is empty.");
+
+        showPage("shop");
+
+        return;
+    }
+
+    const total =
+        getCartTotal();
+
+    document.getElementById("confirmationTotal").textContent =
+        "₹" + total.toLocaleString();
+
+    showPage("confirmation");
+
+}
+
+
+// ================= WISHLIST =================
+
+function toggleWishlist(id) {
+
+    const product =
+        products.find(item => item.id === id);
+
+    const exists =
+        wishlist.some(item => item.id === id);
+
+    if (exists) {
+
+        wishlist =
+            wishlist.filter(item =>
+                item.id !== id
+            );
+
+    } else {
+
+        wishlist.push(product);
+
+    }
+
+    localStorage.setItem(
+        "novamartWishlist",
+        JSON.stringify(wishlist)
+    );
+
+    renderProducts();
+
+    renderWishlist();
+
+}
+
+
+function addToWishlist(product) {
+
+    if (!wishlist.some(item => item.id === product.id)) {
+
+        wishlist.push(product);
+
+        localStorage.setItem(
+            "novamartWishlist",
+            JSON.stringify(wishlist)
+        );
+
+        alert(
+            "Added to Wishlist!"
+        );
+
+    }
+
+}
+
+
+function renderWishlist() {
+
+    const container =
+        document.getElementById("wishlistProducts");
+
+    if (wishlist.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="checkout-card">
+
+                <h2>Your Wishlist is Empty</h2>
+
+                <p>
+                    Save products you love here.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        wishlist.map(productCard).join("");
+
+}
+
+
+// ================= PRODUCT TABS =================
+
+function showTab(tabId) {
+
+    document.querySelectorAll(".tab-content")
+        .forEach(tab =>
+            tab.classList.remove("active-tab")
+        );
+
+    document.getElementById(tabId)
+        .classList.add("active-tab");
+
+}
+
+
+// ================= ADDRESS =================
+
+function addAddress() {
+
+    alert(
+        "Add New Address form opened."
+    );
+
+}
+
+
+// ================= LOGIN =================
+
+function loginUser() {
+
+    const email =
+        document.getElementById("loginEmail").value;
+
+    const password =
+        document.getElementById("loginPassword").value;
+
+    if (!email || !password) {
+
+        alert(
+            "Please enter email and password."
+        );
+
+        return;
+    }
+
+    alert(
+        "Login successful!"
+    );
+
+    showPage("home");
+
+}
+
+
+// ================= SIGNUP =================
+
+function signupUser() {
+
+    const name =
+        document.getElementById("signupName").value;
+
+    const email =
+        document.getElementById("signupEmail").value;
+
+    const password =
+        document.getElementById("signupPassword").value;
+
+    if (!name || !email || !password) {
+
+        alert(
+            "Please fill all required fields."
+        );
+
+        return;
+    }
+
+    alert(
+        "Account created successfully!"
+    );
+
+    showPage("login");
+
+}
+
+
+// ================= SAVE CART =================
+
+function saveCart() {
+
+    localStorage.setItem(
+        "novamartCart",
+        JSON.stringify(cart)
+    );
+
+}
+
+
+// ================= INITIALIZATION =================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        renderProducts();
+
+        renderWishlist();
+
+        updateCartCount();
+
+    }
+);
