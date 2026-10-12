@@ -7,8 +7,9 @@ To design a prototype for a Bus Ticket Booking System using Figma.
 Figma
 
 ### Figma Prototype
+https://www.figma.com/make/gpHcpTXnKhzBMcUGh15Gt0/Online-Bus-Booking-System?fullscreen=1&t=YrgPFEhXS4z83MVb-1&code-node-id=0-6
 
-index.html
+### index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,3 +90,6 @@ index.html
 
 </body>
 </html>
+
+### Result
+The Bus Ticket Booking System prototype was successfully designed using Figma.
