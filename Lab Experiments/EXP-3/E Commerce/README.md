@@ -1,5 +1,11 @@
+### Software Engineering Lab
+Experiment 3– E-Commerce  
 
+### Aim
+To design a prototype for E-Commerce Web Application using Figma.
 
+### Tool Used
+Figma
 
 ### Figma Prototype
 https://class-purple-73315546.figma.site
@@ -4721,3 +4727,4 @@ document.addEventListener(
     }
 );
 ### Result 
+Thus, the NovaMart E-Commerce Web Application prototype was successfully designed and developed with a professional and interactive user interface.
