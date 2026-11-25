@@ -1,0 +1,7 @@
+Summary,Issue Type,Priority,Status
+Design login page,Task,High,To Do
+Create database schema,Task,High,To Do
+Write API documentation,Task,Low,To Do
+Implement search feature,Task,Medium,To Do
+Set up CI pipeline,Task,Medium,To Do
+Test payment module,Task,Highest,To Do

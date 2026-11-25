@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    environment {
+        IMAGE      = "<dockerhub-username>/flask-api"
+        TAG        = "${env.BUILD_NUMBER}"
+        AWS_REGION = "ap-south-1"
+    }
+    triggers { pollSCM('H/2 * * * *') }   // fallback; the GitHub webhook triggers builds instantly
+    stages {
+        stage('Checkout') {
+            steps { checkout scm }
+        }
+        stage('Build Image') {
+            steps { sh 'docker build -t $IMAGE:$TAG sample-app' }
+        }
+        stage('Test') {
+            steps { sh 'docker run --rm $IMAGE:$TAG python -m unittest -v test_app.py' }
+        }
+        stage('Push Image') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'U', passwordVariable: 'P')]) {
+                    sh 'echo $P | docker login -u $U --password-stdin && docker push $IMAGE:$TAG'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    sh '''
+                      aws ecs update-service --cluster flask-cluster --service flask-service \
+                          --force-new-deployment --region $AWS_REGION
+                    '''
+                }
+            }
+        }
+    }
+    post {
+        success { echo "Build ${env.BUILD_NUMBER} deployed" }
+        failure { echo "Build ${env.BUILD_NUMBER} failed" }
+    }
+}

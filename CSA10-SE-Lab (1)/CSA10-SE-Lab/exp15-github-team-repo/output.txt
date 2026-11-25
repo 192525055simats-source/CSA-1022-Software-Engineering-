@@ -1,0 +1,115 @@
+
+### 1. Set up the repository for the team project
+$ git init --bare -b main remote/team-project.git
+Initialized empty Git repository in ~/lab/remote/team-project.git/
+$ git clone remote/team-project.git lead
+Cloning into 'lead'...
+warning: You appear to have cloned an empty repository.
+done.
+$ git add README.md
+$ git commit -m Initial commit
+[main (root-commit) 9065248] Initial commit
+ 1 file changed, 3 insertions(+)
+ create mode 100644 README.md
+$ git push -u origin main
+To ~/lab/remote/team-project.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+### 2. Create branches for individual modules
+$ git clone remote/team-project.git member-a
+Cloning into 'member-a'...
+done.
+$ git clone remote/team-project.git member-b
+Cloning into 'member-b'...
+done.
+$ git checkout -b module-auth
+Switched to a new branch 'module-auth'
+$ git add .
+$ git commit -m Add auth module
+[module-auth b4b6776] Add auth module
+ 2 files changed, 2 insertions(+)
+ create mode 100644 auth.py
+$ git push -u origin module-auth
+To ~/lab/remote/team-project.git
+ * [new branch]      module-auth -> module-auth
+branch 'module-auth' set up to track 'origin/module-auth'.
+$ git checkout -b module-payment
+Switched to a new branch 'module-payment'
+$ git add .
+$ git commit -m "Add payment module"  (Member B)
+$ git push -u origin module-payment
+To ~/lab/remote/team-project.git
+ * [new branch]      module-payment -> module-payment
+branch 'module-payment' set up to track 'origin/module-payment'.
+
+### 3. Merge branches with pull requests after code review (module-auth first)
+$ git fetch origin
+From ~/lab/remote/team-project
+ * [new branch]      module-auth    -> origin/module-auth
+ * [new branch]      module-payment -> origin/module-payment
+Code review: PR #1 module-auth -> approved
+$ git merge --no-ff origin/module-auth -m Merge pull request #1 from module-auth
+Merge made by the 'ort' strategy.
+ README.md | 1 +
+ auth.py   | 1 +
+ 2 files changed, 2 insertions(+)
+ create mode 100644 auth.py
+$ git push origin main
+To ~/lab/remote/team-project.git
+   9065248..6399f6e  main -> main
+
+### 4. Second PR conflicts on README.md (both modules edited the same line)
+Code review: PR #2 module-payment -> approved after resolving conflict
+$ git merge origin/module-payment
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Automatic merge failed; fix conflicts and then commit the result.
+$ cat README.md
+# Team Project
+
+## Modules
+<<<<<<< HEAD
+- auth: login module (Member A)
+=======
+- payment: payment module (Member B)
+>>>>>>> origin/module-payment
+(resolved by keeping both lines)
+$ cat README.md
+# Team Project
+
+## Modules
+- auth: login module (Member A)
+- payment: payment module (Member B)
+$ git add README.md
+$ git commit -m Merge pull request #2 from module-payment (resolve README conflict)
+[main 80f359a] Merge pull request #2 from module-payment (resolve README conflict)
+$ git push origin main
+To ~/lab/remote/team-project.git
+   6399f6e..80f359a  main -> main
+
+### 5. Document the workflow in README.md
+$ git commit -am Document team workflow in README
+[main 4f08dab] Document team workflow in README
+ 1 file changed, 6 insertions(+)
+$ git push origin main
+To ~/lab/remote/team-project.git
+   80f359a..4f08dab  main -> main
+
+### 6. Final history (submit the repository link)
+$ git log --oneline --graph --decorate
+* 4f08dab (HEAD -> main, origin/main) Document team workflow in README
+*   80f359a Merge pull request #2 from module-payment (resolve README conflict)
+|\  
+| * d948b41 (origin/module-payment) Add payment module
+* |   6399f6e Merge pull request #1 from module-auth
+|\ \  
+| |/  
+|/|   
+| * b4b6776 (origin/module-auth) Add auth module
+|/  
+* 9065248 Initial commit
+$ git ls-files
+README.md
+auth.py
+payment.py

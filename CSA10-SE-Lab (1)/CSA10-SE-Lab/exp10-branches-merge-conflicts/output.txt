@@ -1,0 +1,69 @@
+
+### 1. Clone the shared repository
+$ git clone remote/shared.git me
+Cloning into 'me'...
+done.
+
+### 2. Create and switch to a new branch
+$ git checkout -b feature-greeting
+Switched to a new branch 'feature-greeting'
+
+### 3-4. Change greet() and commit
+$ git commit -am Personalise greeting
+[feature-greeting d5e6eba] Personalise greeting
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+### 5. Push the branch
+$ git push -u origin feature-greeting
+To ~/lab/remote/shared.git
+ * [new branch]      feature-greeting -> feature-greeting
+branch 'feature-greeting' set up to track 'origin/feature-greeting'.
+
+### (meanwhile) Collaborator changes the SAME line on main and pushes
+$ (collaborator) git commit -am "Change greeting to Welcome" && git push origin main
+
+### 6-7. Pull latest main, switch back to feature branch
+$ git fetch origin
+From ~/lab/remote/shared
+   2a84cee..b47789f  main       -> origin/main
+$ git checkout feature-greeting
+Already on 'feature-greeting'
+Your branch is up to date with 'origin/feature-greeting'.
+
+### 8. Merge main into the feature branch -> CONFLICT
+$ git merge origin/main
+Auto-merging app.py
+CONFLICT (content): Merge conflict in app.py
+Automatic merge failed; fix conflicts and then commit the result.
+$ git status --short
+UU app.py
+
+### 9. Open the conflicting file and resolve manually
+$ cat app.py
+def greet():
+<<<<<<< HEAD
+    return "Hello, Roobini!"
+=======
+    return "Welcome"
+>>>>>>> origin/main
+(edited by hand: kept both ideas -> "Welcome, Roobini!")
+$ cat app.py
+def greet():
+    return "Welcome, Roobini!"
+$ git add app.py
+
+### 10. Commit the resolved merge
+$ git commit -m Merge main into feature-greeting; resolve greeting conflict
+[feature-greeting b5e99a4] Merge main into feature-greeting; resolve greeting conflict
+
+### 11. Push the merged branch (then open a pull request on GitHub)
+$ git push origin feature-greeting
+To ~/lab/remote/shared.git
+   d5e6eba..b5e99a4  feature-greeting -> feature-greeting
+$ git log --oneline --graph --decorate
+*   b5e99a4 (HEAD -> feature-greeting, origin/feature-greeting) Merge main into feature-greeting; resolve greeting conflict
+|\  
+| * b47789f (origin/main, origin/HEAD) Change greeting to Welcome
+* | d5e6eba Personalise greeting
+|/  
+* 2a84cee (main) Initial commit

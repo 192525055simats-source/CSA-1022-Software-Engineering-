@@ -1,0 +1,79 @@
+
+### Task 1: Fork the public repository (server-side copy)
+$ git clone --bare remote/calculator.git remote/roobini-calculator.git
+Cloning into bare repository 'remote/roobini-calculator.git'...
+done.
+
+### Task 2: Clone the fork to the local machine
+$ git clone remote/roobini-calculator.git calc-local
+Cloning into 'calc-local'...
+done.
+$ git remote add upstream ~/lab/remote/calculator.git
+
+### Task 3: Create a feature branch
+$ git checkout -b feature/add-power
+Switched to a new branch 'feature/add-power'
+
+### Task 4: Add a new function
+$ cat calc.py
+def add(a, b):
+    return a + b
+
+def sub(a, b):
+    return a - b
+
+def power(a, b):
+    return a ** b
+
+### Task 5: Commit and push the branch
+$ git commit -am Add power function
+[feature/add-power 4e4443c] Add power function
+ 1 file changed, 3 insertions(+)
+$ git push -u origin feature/add-power
+To ~/lab/remote/roobini-calculator.git
+ * [new branch]      feature/add-power -> feature/add-power
+branch 'feature/add-power' set up to track 'origin/feature/add-power'.
+
+### Task 6: Open pull request feature/add-power -> main (contents of the PR)
+$ git log --oneline origin/main..feature/add-power
+4e4443c Add power function
+$ git diff --stat main feature/add-power
+ calc.py | 3 +++
+ 1 file changed, 3 insertions(+)
+
+### Task 7: Reviewer reviews the pull request and gives feedback
+$ git checkout feature/add-power
+Switched to a new branch 'feature/add-power'
+branch 'feature/add-power' set up to track 'origin/feature/add-power'.
+Review comment (Collaborator): power() needs a docstring and a negative-exponent test.
+
+### Task 8: Respond to feedback with an additional commit
+$ python3 calc.py
+8 0.5
+$ git commit -am Address review: add docstring and example
+[feature/add-power fea0f46] Address review: add docstring and example
+ 1 file changed, 4 insertions(+)
+$ git push origin feature/add-power
+To ~/lab/remote/roobini-calculator.git
+   4e4443c..fea0f46  feature/add-power -> feature/add-power
+
+### Task 9: PR approved - merge into main
+$ git merge --no-ff origin/feature/add-power -m Merge pull request #1 from roobini/feature/add-power
+Merge made by the 'ort' strategy.
+ calc.py | 7 +++++++
+ 1 file changed, 7 insertions(+)
+$ git push origin main
+To ~/lab/remote/roobini-calculator.git
+   ed37934..e3b2a2d  main -> main
+$ git log --oneline --graph --decorate
+*   e3b2a2d (HEAD -> main, origin/main, origin/HEAD) Merge pull request #1 from roobini/feature/add-power
+|\  
+| * fea0f46 (origin/feature/add-power) Address review: add docstring and example
+| * 4e4443c Add power function
+|/  
+* ed37934 Initial calculator
+
+### Task 10: Summary for submission
+PR link  : https://github.com/<your-username>/calculator/pull/1   (replace after you open the real PR)
+Changes  : added power(a, b) to calc.py, then docstring + example after review
+Collaboration: reviewer commented on the PR, I pushed a follow-up commit, PR merged

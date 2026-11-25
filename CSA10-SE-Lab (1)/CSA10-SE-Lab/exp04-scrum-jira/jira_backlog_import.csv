@@ -1,0 +1,7 @@
+Summary,Issue Type,Priority,Story point estimate
+Develop API for login,Story,Highest,5
+Create user registration page,Story,High,4
+Implement shopping cart,Story,High,4
+Design product listing page,Story,Medium,3
+Write unit tests for login API,Story,Low,2
+Integrate payment gateway,Story,Medium,3

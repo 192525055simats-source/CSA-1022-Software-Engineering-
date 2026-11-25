@@ -1,0 +1,25 @@
+$ python3 -m unittest -v test_app.py
+test_create_and_list (test_app.TodoTests.test_create_and_list) ... ok
+test_delete (test_app.TodoTests.test_delete) ... ok
+test_update_marks_done (test_app.TodoTests.test_update_marks_done) ... ok
+test_validation_and_404 (test_app.TodoTests.test_validation_and_404) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.011s
+
+OK
+
+$ curl -s -X POST -H "Content-Type: application/json" -d "{\"title\":\"Finish lab record\"}" http://localhost:5000/todos
+{"done":false,"id":1,"title":"Finish lab record"}
+
+$ curl -s -X POST -H "Content-Type: application/json" -d "{\"title\":\"Push image to Docker Hub\"}" http://localhost:5000/todos
+{"done":false,"id":2,"title":"Push image to Docker Hub"}
+
+$ curl -s -X PUT -H "Content-Type: application/json" -d "{\"done\":true}" http://localhost:5000/todos/1
+{"done":true,"id":1,"title":"Finish lab record"}
+
+$ curl -s http://localhost:5000/todos
+[{"done":true,"id":1,"title":"Finish lab record"},{"done":false,"id":2,"title":"Push image to Docker Hub"}]
+
+$ curl -s -o /dev/null -w "DELETE /todos/2 -> HTTP %{http_code}" -X DELETE http://localhost:5000/todos/2
+DELETE /todos/2 -> HTTP 204

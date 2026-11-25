@@ -1,0 +1,59 @@
+$ git clone remote/app.git work
+Cloning into 'work'...
+done.
+
+### 1. Create branch feature-login
+$ git checkout -b feature-login
+Switched to a new branch 'feature-login'
+
+### 2. Add login.py with a simple login function
+$ cat login.py
+USERS = {"roobini": "secret123", "admin": "admin@123"}
+
+def login(username, password):
+    """Return True when the username/password pair is valid."""
+    return USERS.get(username) == password
+
+if __name__ == "__main__":
+    print("roobini / secret123 ->", login("roobini", "secret123"))
+    print("roobini / wrong     ->", login("roobini", "wrong"))
+    print("ghost   / anything  ->", login("ghost", "anything"))
+$ python3 login.py
+roobini / secret123 -> True
+roobini / wrong     -> False
+ghost   / anything  -> False
+
+### 3. Commit and push the branch
+$ git add login.py
+$ git commit -m Add simple login function
+[feature-login cf3256e] Add simple login function
+ 1 file changed, 10 insertions(+)
+ create mode 100644 login.py
+$ git push -u origin feature-login
+To ~/lab/remote/app.git
+ * [new branch]      feature-login -> feature-login
+branch 'feature-login' set up to track 'origin/feature-login'.
+
+### 4. Create pull request feature-login -> main (shown as a diff; PR itself is made on GitHub)
+$ git diff --stat origin/main...feature-login
+ login.py | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+### 5. Merge the pull request (merge commit, like GitHub 'Create a merge commit')
+$ git checkout main
+Switched to branch 'main'
+Your branch is up to date with 'origin/main'.
+$ git merge --no-ff feature-login -m Merge pull request #1 from roobini/feature-login
+Merge made by the 'ort' strategy.
+ login.py | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+ create mode 100644 login.py
+$ git push origin main
+To ~/lab/remote/app.git
+   73ebbc3..c90be91  main -> main
+$ git log --oneline --graph --decorate
+*   c90be91 (HEAD -> main, origin/main, origin/HEAD) Merge pull request #1 from roobini/feature-login
+|\  
+| * cf3256e (origin/feature-login, feature-login) Add simple login function
+|/  
+* 73ebbc3 Initial commit

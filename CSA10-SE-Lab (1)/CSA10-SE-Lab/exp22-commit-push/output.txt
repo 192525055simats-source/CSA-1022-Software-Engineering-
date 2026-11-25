@@ -1,0 +1,38 @@
+
+### 1. Clone the repository
+$ git clone remote/demo.git
+Cloning into 'demo'...
+done.
+
+### 2. Modify README.md
+$ cat README.md
+# Demo
+Updated for lab experiment 22.
+
+### 3. Stage the changes
+$ git add README.md
+$ git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+	modified:   README.md
+
+
+### 4. Commit with message "Updated README"
+$ git commit -m Updated README
+[main bcc6b55] Updated README
+ 1 file changed, 1 insertion(+)
+
+### 5. Push to GitHub
+$ git push origin main
+To ~/lab/remote/demo.git
+   f654aa1..bcc6b55  main -> main
+
+### 6. Verify local and remote are in sync
+$ git log --oneline --decorate
+bcc6b55 (HEAD -> main, origin/main, origin/HEAD) Updated README
+f654aa1 Initial commit
+$ git status -sb
+## main...origin/main

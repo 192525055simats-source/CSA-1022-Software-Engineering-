@@ -1,0 +1,10 @@
+$ python yaml.safe_load exp12-flask-docker-kubernetes/k8s/deployment.yaml
+  OK: 1 document(s): Deployment
+$ python yaml.safe_load exp12-flask-docker-kubernetes/k8s/service.yaml
+  OK: 1 document(s): Service
+$ python yaml.safe_load exp14-github-actions-cd/.github/workflows/cd.yml
+  OK: 1 document(s): build-and-push,deploy
+$ python yaml.safe_load exp19-github-actions-flask/.github/workflows/ci-cd.yml
+  OK: 1 document(s): test,build-and-push,deploy
+$ python yaml.safe_load exp18-k8s-multicontainer/k8s/app.yaml
+  OK: 7 document(s): Secret, Deployment, Service, Deployment, Service, Deployment, Service

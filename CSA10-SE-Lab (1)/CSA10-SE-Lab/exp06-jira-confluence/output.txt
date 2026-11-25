@@ -1,0 +1,10 @@
+LMS-1  Develop book search functionality        Done         [####################] 100%
+LMS-2  Create user login page                   Done         [####################] 100%
+LMS-3  Implement book reservation               In Progress  [##########..........]  50%
+LMS-4  Generate monthly borrowed-book report    In Progress  [##########..........]  50%
+LMS-5  Send overdue email notifications         To Do        [....................]   0%
+LMS-6  Build librarian dashboard                To Do        [....................]   0%
+
+Issues done: 2/6
+Sprint completion (issues): [##########....................]  33%
+Weighted progress         : [###############...............]  50%

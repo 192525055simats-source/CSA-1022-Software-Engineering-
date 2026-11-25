@@ -1,0 +1,7 @@
+Summary,Issue Type,Priority,Labels,Labels,Description
+Course enrollment and registration,Story,Highest,MoSCoW-Must,Kano-Must-be,Learners cannot join courses without it.
+Video lecture streaming,Story,Highest,MoSCoW-Must,Kano-One-dimensional,Core content delivery; better streaming quality gives proportionally higher satisfaction.
+Interactive quizzes and assignments,Story,High,MoSCoW-Should,Kano-One-dimensional,Key to learning outcomes; courses can launch with videos only.
+Progress tracking dashboard,Story,Medium,MoSCoW-Should,Kano-Attractive,"Motivates learners; not expected, so it delights when present."
+Peer-to-peer discussion forums,Story,Low,MoSCoW-Could,Kano-Attractive,Adds community but needs moderation; can follow later.
+Certificate generation,Story,Low,MoSCoW-Could,Kano-Attractive,"Valued on completion, but depends on quizzes/progress tracking being ready first."

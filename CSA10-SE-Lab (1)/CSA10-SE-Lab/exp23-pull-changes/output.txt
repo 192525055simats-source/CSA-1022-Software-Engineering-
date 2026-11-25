@@ -1,0 +1,42 @@
+
+### 1. Clone the repository (my local copy)
+$ git clone remote/team-project.git mine
+Cloning into 'mine'...
+done.
+
+### 2. Collaborator makes a change and pushes it
+$ git clone remote/team-project.git collaborator
+Cloning into 'collaborator'...
+done.
+$ git add FEATURES.txt
+$ git commit -m "Add FEATURES.txt"  (as Collaborator)
+$ git push origin main
+To ~/lab/remote/team-project.git
+   4102ec1..c080340  main -> main
+
+### 3. My copy is now behind - check remote
+$ git fetch origin
+From ~/lab/remote/team-project
+   4102ec1..c080340  main       -> origin/main
+$ git status -sb
+## main...origin/main [behind 1]
+
+### 4. Pull the latest changes
+$ git pull origin main
+From ~/lab/remote/team-project
+ * branch            main       -> FETCH_HEAD
+Updating 4102ec1..c080340
+Fast-forward
+ FEATURES.txt | 1 +
+ 1 file changed, 1 insertion(+)
+ create mode 100644 FEATURES.txt
+
+### 5. Verify the collaborator's change is present
+$ ls
+FEATURES.txt
+README.md
+$ cat FEATURES.txt
+Feature list: login, dashboard
+$ git log --format=%h %an: %s
+c080340 Collaborator: Add FEATURES.txt
+4102ec1 Roobini P: Initial commit

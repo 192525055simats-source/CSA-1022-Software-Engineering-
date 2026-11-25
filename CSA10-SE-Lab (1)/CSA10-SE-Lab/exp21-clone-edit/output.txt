@@ -1,0 +1,34 @@
+
+### Setup: an existing public repository (stand-in for GitHub)
+
+### 1. Clone the repository
+$ git clone remote/sample-repo.git
+Cloning into 'sample-repo'...
+done.
+
+### 2. Navigate into the directory and open a file
+$ ls -la
+total 16
+drwxr-xr-x 3 root root 4096 Nov 22 18:07 .
+drwx------ 5 root root 4096 Nov 22 18:07 ..
+drwxr-xr-x 8 root root 4096 Nov 22 18:07 .git
+-rw-r--r-- 1 root root   51 Nov 22 18:07 README.md
+$ cat README.md
+# Sample Repo
+This repo is used for practcing git.
+
+### 3. Make a small edit (fix a typo: practcing -> practicing)
+$ sed -i s/practcing/practicing/ README.md
+
+### 4. Save and view the change
+$ git status --short
+ M README.md
+$ git diff
+diff --git a/README.md b/README.md
+index 72bd6c0..ab854c7 100644
+--- a/README.md
++++ b/README.md
+@@ -1,2 +1,2 @@
+ # Sample Repo
+-This repo is used for practcing git.
++This repo is used for practicing git.

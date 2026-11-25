@@ -1,0 +1,5 @@
+Summary,Issue Type,Priority,Labels,Labels,Description
+User login and role assignment,Story,Highest,MoSCoW-Must,Kano-Must-be,"Nothing works without authentication; users expect it, so presence adds no delight but absence causes dissatisfaction."
+Task creation and assignment,Story,Highest,MoSCoW-Must,Kano-Must-be,Core purpose of the system; expected by every user.
+Task prioritization and deadlines,Story,High,MoSCoW-Should,Kano-One-dimensional,"Satisfaction grows with quality (reminders, sorting, overdue flags); important but a task list works first."
+Progress tracking and reporting,Story,Medium,MoSCoW-Should,Kano-Attractive,Charts and burndown are unexpected extras that delight managers; core flow still works without them.

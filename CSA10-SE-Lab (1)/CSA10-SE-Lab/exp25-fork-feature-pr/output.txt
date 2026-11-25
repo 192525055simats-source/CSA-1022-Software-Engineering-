@@ -1,0 +1,53 @@
+
+### 1. Fork the repository (a fork is a server-side copy)
+$ git clone --bare remote/upstream.git remote/roobini-fork.git
+Cloning into bare repository 'remote/roobini-fork.git'...
+done.
+
+### 2. Clone the fork to the local machine
+$ git clone remote/roobini-fork.git project
+Cloning into 'project'...
+done.
+$ git remote add upstream ~/lab/remote/upstream.git
+$ git remote -v
+origin	~/lab/remote/roobini-fork.git (fetch)
+origin	~/lab/remote/roobini-fork.git (push)
+upstream	~/lab/remote/upstream.git (fetch)
+upstream	~/lab/remote/upstream.git (push)
+
+### 3. A teammate adds a feature to upstream meanwhile
+$ (teammate) git commit -m "Add about page" && git push origin main
+
+### 4. Fetch the latest upstream changes
+$ git fetch upstream
+From ~/lab/remote/upstream
+ * [new branch]      main       -> upstream/main
+$ git merge upstream/main
+Updating 40298f3..124e51b
+Fast-forward
+ app.py | 1 +
+ 1 file changed, 1 insertion(+)
+
+### 5. Create a new branch for my feature (existing code stays untouched)
+$ git checkout -b feature-contact
+Switched to a new branch 'feature-contact'
+
+### 6. Implement the change and push to the fork
+$ cat app.py
+def home(): return 'home'
+def about(): return 'about'
+def contact(): return 'contact'
+$ git commit -am Add contact page
+[feature-contact 892bb12] Add contact page
+ 1 file changed, 1 insertion(+)
+$ git push -u origin feature-contact
+To ~/lab/remote/roobini-fork.git
+ * [new branch]      feature-contact -> feature-contact
+branch 'feature-contact' set up to track 'origin/feature-contact'.
+
+### 7. Pull request: fork/feature-contact -> upstream/main (diff of what the PR contains)
+$ git log --oneline upstream/main..feature-contact
+892bb12 Add contact page
+$ git diff --stat upstream/main feature-contact
+ app.py | 1 +
+ 1 file changed, 1 insertion(+)

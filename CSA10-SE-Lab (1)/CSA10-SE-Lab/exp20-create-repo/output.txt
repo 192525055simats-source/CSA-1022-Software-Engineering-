@@ -1,0 +1,48 @@
+
+### 1. Create the repository (GitHub stand-in) with an initial README.md
+$ git init --bare -b main remote/personal-project.git
+Initialized empty Git repository in ~/lab/remote/personal-project.git/
+$ git clone remote/personal-project.git web-ui
+Cloning into 'web-ui'...
+warning: You appear to have cloned an empty repository.
+done.
+$ git add README.md
+$ git commit -m Initial commit
+[main (root-commit) 776e29b] Initial commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 README.md
+$ git push -u origin main
+To ~/lab/remote/personal-project.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+
+### 2. Clone the repository to the local machine
+$ git clone remote/personal-project.git personal-project
+Cloning into 'personal-project'...
+done.
+
+### 3. Edit README.md (add a project description)
+$ cat README.md
+# personal-project
+
+## Description
+Personal project created for CSA10 Software Engineering lab.
+It demonstrates the basic Git workflow: clone, edit, commit and push.
+
+### 4. Stage, commit and push
+$ git status --short
+ M README.md
+$ git add README.md
+$ git commit -m Add project description to README
+[main 5718ef8] Add project description to README
+ 1 file changed, 4 insertions(+)
+$ git push origin main
+To ~/lab/remote/personal-project.git
+   776e29b..5718ef8  main -> main
+
+### 5. Verify
+$ git log --oneline
+5718ef8 Add project description to README
+776e29b Initial commit
+$ git status -sb
+## main...origin/main

@@ -1,0 +1,32 @@
+
+=== Initial board ===
+To Do                      | In Progress                | Done                      
+---------------------------+----------------------------+---------------------------
+Design login page          |                            |                           
+Create database schema     |                            |                           
+Write API documentation    |                            |                           
+Implement search feature   |                            |                           
+Set up CI pipeline         |                            |                           
+Test payment module        |                            |                           
+moved 'Design login page': To Do -> In Progress
+moved 'Create database schema': To Do -> In Progress
+
+=== After starting work ===
+To Do                      | In Progress                | Done                      
+---------------------------+----------------------------+---------------------------
+Write API documentation    | Design login page          |                           
+Implement search feature   | Create database schema     |                           
+Set up CI pipeline         |                            |                           
+Test payment module        |                            |                           
+moved 'Design login page': In Progress -> Done
+moved 'Set up CI pipeline': To Do -> In Progress
+moved 'Set up CI pipeline': In Progress -> Done
+
+=== Final board ===
+To Do                      | In Progress                | Done                      
+---------------------------+----------------------------+---------------------------
+Write API documentation    | Create database schema     | Design login page         
+Implement search feature   |                            | Set up CI pipeline        
+Test payment module        |                            |                           
+
+WIP: 1 | Done: 2 | Remaining: 3

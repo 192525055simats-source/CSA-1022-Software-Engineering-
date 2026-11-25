@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Multi-container App</title></head>
+<body style="font-family:Arial;text-align:center;margin-top:60px">
+  <h1>Frontend -> Backend -> Database</h1>
+  <pre id="out">loading...</pre>
+  <script>
+    fetch('/api/status').then(r => r.json()).then(j => out.textContent = JSON.stringify(j, null, 2))
+      .catch(e => out.textContent = 'backend not reachable');
+  </script>
+</body></html>

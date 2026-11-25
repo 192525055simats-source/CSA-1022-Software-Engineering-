@@ -1,0 +1,18 @@
+Prioritised backlog
+  SHOP-2 Highest  5 pts  Develop API for login
+  SHOP-1 High     3 pts  Create user registration page
+  SHOP-4 High     5 pts  Implement shopping cart
+  SHOP-3 Medium   3 pts  Design product listing page
+  SHOP-5 Medium   8 pts  Integrate payment gateway
+  SHOP-6 Low      2 pts  Write unit tests for login API
+
+Sprint 1 (Mon-Fri) scope: 5 issues, 18 story points
+
+Day  Completed  Remaining  Burndown
+Mon          0         18  ##################
+Tue          5         13  #############
+Wed          3         10  ##########
+Thu          5          5  #####
+Fri          5          0  
+
+Sprint completed: all committed issues Done
